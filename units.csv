@@ -1,3 +1,5 @@
-Unit,Floor Plan,Direction,Floor,Matched,Ready Date
-
-
+Unit,Floor Plan,Direction,Floor,Ready Date
+101,Helix,Interior North,1,
+102,Oxbow,Exterior South,1,
+103,Compass,Interior North,1,
+104,Curve,Exterior South,1,
