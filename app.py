@@ -6,7 +6,6 @@ import streamlit as st
 
 st.set_page_config(
     page_title="Property Matcher",
-    page_icon="🏠",
     layout="wide",
 )
 
@@ -182,12 +181,12 @@ def run_matching_logic(units_df: pd.DataFrame, notices_df: pd.DataFrame, waitlis
 
 # ---------- Main UI ----------
 
-st.title("🏠 Property Matcher")
+st.title("Property Matcher")
 st.markdown(
     "<span style='color:#2CB1A1; font-weight:600;'>Internal matching dashboard</span>",
     unsafe_allow_html=True,
 )
-st.write("Use the tabs above to manage units, notices, waitlist, and matches, then run matching when you're ready.")
+st.write("Use the tabs below to manage units, notices, waitlist, and matches, then run matching when you're ready.")
 
 tabs = st.tabs(["Units", "Notices", "Waitlist", "Matches", "Run Matching"])
 
@@ -197,14 +196,13 @@ with tabs[0]:
 
     units_df = load_csv(UNITS_FILE)
 
-    # Editable table
+
     edited_df = st.data_editor(
         units_df,
         use_container_width=True,
-        num_rows="dynamic"  # allows adding new rows
+        num_rows="dynamic"
     )
 
-    # Save button
     if st.button("Save Changes", type="primary"):
         save_csv(edited_df, UNITS_FILE)
         st.success("Units updated successfully.")
@@ -214,18 +212,22 @@ with tabs[0]:
 with tabs[1]:
     st.subheader("Notices")
 
-    # Load units instead of notices.csv
     units_df = load_csv(UNITS_FILE)
 
-    # Filter for Notice To Vacate
-    notices_df = units_df[units_df["Status"].astype(str) == "Notice To Vacate"]
+    # Filter: Ready Date is not empty
+    notices_df = units_df[
+        units_df["Ready Date"].astype(str).str.strip() != ""
+    ]
+
+    # Only show Unit + Ready Date
+    notices_df = notices_df[["Unit", "Ready Date"]]
 
     # Global search
     search_query = st.text_input("Global search", "", key="notices_global_search")
     notices_filtered = global_search_filter(notices_df, search_query)
 
     if notices_filtered.empty:
-        st.info("No units currently marked as Notice To Vacate.")
+        st.info("No units with a Ready Date.")
     else:
         st.dataframe(notices_filtered, use_container_width=True)
 

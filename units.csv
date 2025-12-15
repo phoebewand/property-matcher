@@ -1,2 +1,4 @@
-Unit,Floor Plan,Direction,Floor,Status
-101,Helix,Interior North,1,renewed
+Unit,Floor Plan,Direction,Floor,Matched,Ready Date
+101,Helix,Interior North,1,,,
+103,Compass,Interior North,1,,,
+
