@@ -192,40 +192,42 @@ st.write("Use the tabs above to manage units, notices, waitlist, and matches, th
 tabs = st.tabs(["Units", "Notices", "Waitlist", "Matches", "Run Matching"])
 
 # ---------- Units Tab ----------
-
 with tabs[0]:
     st.subheader("Units")
+
     units_df = load_csv(UNITS_FILE)
 
-    search_query = st.text_input("Global search", "", key="units_global_search")
-    units_filtered = global_search_filter(units_df, search_query)
+    # Editable table
+    edited_df = st.data_editor(
+        units_df,
+        use_container_width=True,
+        num_rows="dynamic"  # allows adding new rows
+    )
 
-    selected_idx = get_selected_row(units_filtered, label="Units")
-
-    if selected_idx is not None and not units_filtered.empty:
-        original_index = units_filtered.index[selected_idx]
-    else:
-        original_index = None
-
-    show_record_form(units_df, selected_idx, original_index, tab_name="Units", file_path=UNITS_FILE)
+    # Save button
+    if st.button("Save Changes", type="primary"):
+        save_csv(edited_df, UNITS_FILE)
+        st.success("Units updated successfully.")
+        st.rerun()
 
 # ---------- Notices Tab ----------
-
 with tabs[1]:
     st.subheader("Notices")
-    notices_df = load_csv(NOTICES_FILE)
 
+    # Load units instead of notices.csv
+    units_df = load_csv(UNITS_FILE)
+
+    # Filter for Notice To Vacate
+    notices_df = units_df[units_df["Status"].astype(str) == "Notice To Vacate"]
+
+    # Global search
     search_query = st.text_input("Global search", "", key="notices_global_search")
     notices_filtered = global_search_filter(notices_df, search_query)
 
-    selected_idx = get_selected_row(notices_filtered, label="Notices")
-
-    if selected_idx is not None and not notices_filtered.empty:
-        original_index = notices_filtered.index[selected_idx]
+    if notices_filtered.empty:
+        st.info("No units currently marked as Notice To Vacate.")
     else:
-        original_index = None
-
-    show_record_form(notices_df, selected_idx, original_index, tab_name="Notices", file_path=NOTICES_FILE)
+        st.dataframe(notices_filtered, use_container_width=True)
 
 # ---------- Waitlist Tab ----------
 
